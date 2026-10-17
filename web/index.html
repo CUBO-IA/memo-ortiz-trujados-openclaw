@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trujados — Lobby</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <div class="lobby">
+    <h1>🎮 Trujados</h1>
+    <p class="sub">Creá tu agente y dejaló jugar solo.</p>
+
+    <div class="card">
+      <label>Nombre del agente</label>
+      <input id="nombre" maxlength="30" placeholder="Ej: Ana">
+
+      <label>Avatar</label>
+      <div class="avatares" id="avatares"></div>
+
+      <label>Personalidad (máx. 140 caracteres)</label>
+      <textarea id="personalidad" maxlength="140" placeholder="Ej: Competitiva, le gusta arriesgar"></textarea>
+
+      <label>Especialidad</label>
+      <select id="especialidad"></select>
+
+      <label>Punto débil</label>
+      <select id="puntoDebil"></select>
+
+      <button id="crear">Crear mi agente</button>
+      <p class="hint" id="estado"></p>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/cliente.js"></script>
+  <script>
+    const CATS = ["Ciencia", "Historia", "Geografía", "Arte", "Deportes", "Entretenimiento"];
+    const PALETA = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f", "#9b59b6", "#e67e22", "#1abc9c", "#e84393"];
+    let avatarSel = 0;
+
+    function poblarSelects() {
+      const es = document.getElementById("especialidad");
+      const pd = document.getElementById("puntoDebil");
+      CATS.forEach((c, i) => {
+        es.add(new Option(c, c));
+        pd.add(new Option(c, c));
+      });
+      pd.value = "Deportes";
+    }
+
+    function pintarAvatares() {
+      const cont = document.getElementById("avatares");
+      cont.innerHTML = "";
+      PALETA.forEach((c, i) => {
+        const cv = document.createElement("canvas");
+        cv.width = 16; cv.height = 16;
+        const g = cv.getContext("2d");
+        g.fillStyle = c;
+        g.fillRect(0, 2, 16, 12);
+        g.fillRect(5, 0, 6, 4);
+        g.fillStyle = "#fff";
+        g.fillRect(6, 5, 5, 2);
+        if (i % 2 === 0) { g.fillStyle = "#222"; g.fillRect(4, 0, 8, 2); }
+        else { g.fillStyle = "#f5f5dc"; g.fillRect(5, -1, 6, 2); }
+        cv.classList.add("pixel");
+        if (i === avatarSel) cv.classList.add("sel");
+        cv.onclick = () => { avatarSel = i; pintarAvatares(); };
+        cont.appendChild(cv);
+      });
+    }
+
+    document.getElementById("crear").onclick = async () => {
+      const body = {
+        nombre: document.getElementById("nombre").value.trim(),
+        avatar: avatarSel,
+        personalidad: document.getElementById("personalidad").value.trim(),
+        especialidad: document.getElementById("especialidad").value,
+        puntoDebil: document.getElementById("puntoDebil").value,
+      };
+      if (!body.nombre) { document.getElementById("estado").textContent = "Poné un nombre."; return; }
+      const res = await fetch("/api/agentes", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+      });
+      const d = await res.json();
+      const st = document.getElementById("estado");
+      if (d.ok) {
+        st.textContent = "✅ " + d.agente.nombre + " está listo y jugando solo.";
+        document.getElementById("crear").disabled = true;
+      } else {
+        st.textContent = "❌ " + (d.error || "algo salió mal");
+      }
+    };
+
+    poblarSelects();
+    pintarAvatares();
+  </script>
+</body>
+</html>
