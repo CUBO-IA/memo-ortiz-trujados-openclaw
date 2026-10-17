@@ -73,6 +73,16 @@ server.tool(
   }
 );
 
+server.tool(
+  "trujados_volver_home",
+  "Redirige a todas las pantallas a la página de inicio (lobby).",
+  {},
+  async () => {
+    const d = await llamar("/api/partida/home", "POST");
+    return { content: [{ type: "text", text: JSON.stringify(d) }] };
+  }
+);
+
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);

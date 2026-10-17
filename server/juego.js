@@ -231,6 +231,12 @@ function crearJuego({ agentesAI, juezAI, avisar, onEvento, config }) {
     return { ok: true };
   }
 
+  function volverHome() {
+    reiniciar();
+    emitir("redirigir", { a: "/" });
+    return { ok: true };
+  }
+
   function estado() {
     return {
       estado: juego.estado,
@@ -243,7 +249,7 @@ function crearJuego({ agentesAI, juezAI, avisar, onEvento, config }) {
   function esperar(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
   return {
-    registrarAgente, iniciar, darPuntos, declararGanador, reiniciar,
+    registrarAgente, iniciar, darPuntos, declararGanador, reiniciar, volverHome,
     estado, estadoPublico, get agentes() { return agentes; }, get juego() { return juego; },
   };
 }

@@ -45,6 +45,7 @@
   socket.on("reloj", (d) => { estado.reloj = d.segundosRestantes; publicar(); });
   socket.on("esperando", (d) => { estado.esperando = d; publicar(); });
   socket.on("ganador", (d) => { estado.ganador = d; publicar(); });
+  socket.on("redirigir", (d) => { if (d && d.a) window.location.href = d.a; });
 
   window.trujados = { socket, estado, suscribir(fn) { oyentes.push(fn); } };
 })();

@@ -1,5 +1,5 @@
 :root {
-  --bg: #0f1020;
+  --bg: #000000;
   --panel: #1c1e3a;
   --accent: #6c5ce7;
   --text: #ececf4;
@@ -16,7 +16,7 @@ body {
 
 /* Lobby */
 .lobby { max-width: 480px; margin: 0 auto; padding: 24px 16px; }
-.lobby h1 { font-size: 28px; margin: 0 0 4px; }
+.lobby h1 { font-size: 28px; margin: 0 0 4px; color: #bbdd44; }
 .lobby .sub { color: var(--dim); margin: 0 0 20px; }
 .card { background: var(--panel); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
 label { display: block; font-size: 13px; color: var(--dim); margin: 10px 0 4px; }

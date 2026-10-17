@@ -56,6 +56,7 @@ app.post("/api/partida/ganador", requiereToken, (req, res) => {
   res.status(r.ok ? 200 : 400).json(r);
 });
 app.post("/api/partida/reiniciar", requiereToken, (req, res) => res.json(juego.reiniciar()));
+app.post("/api/partida/home", requiereToken, (req, res) => res.json(juego.volverHome()));
 
 // Tiempo real: al conectar, mandar el estado completo
 io.on("connection", (socket) => {

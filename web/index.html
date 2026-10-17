@@ -85,8 +85,9 @@
       const d = await res.json();
       const st = document.getElementById("estado");
       if (d.ok) {
-        st.textContent = "✅ " + d.agente.nombre + " está listo y jugando solo.";
+        st.textContent = "✅ " + d.agente.nombre + " está listo. Llevándote al juego…";
         document.getElementById("crear").disabled = true;
+        setTimeout(function(){ window.location.href = "/pantalla"; }, 800);
       } else {
         st.textContent = "❌ " + (d.error || "algo salió mal");
       }
