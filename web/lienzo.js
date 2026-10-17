@@ -105,23 +105,58 @@
     ctx.restore();
   }
 
+  function envolverTexto(texto, maxChars) {
+    const palabras = String(texto || "").split(" ");
+    const lineas = [];
+    let actual = "";
+    for (const p of palabras) {
+      const candidato = actual ? actual + " " + p : p;
+      if (candidato.length <= maxChars) {
+        actual = candidato;
+      } else {
+        if (actual) lineas.push(actual);
+        if (p.length > maxChars) {
+          for (let i = 0; i < p.length; i += maxChars) lineas.push(p.slice(i, i + maxChars));
+          actual = "";
+        } else {
+          actual = p;
+        }
+      }
+    }
+    if (actual) lineas.push(actual);
+    return lineas.slice(0, 6); // máximo 6 líneas
+  }
+
   function dibujarGlobo(agente, texto, estado) {
     ctx.save();
-    ctx.font = "12px monospace";
-    const maxW = 200;
-    const lineas = texto.length > 40 ? [texto.slice(0, 40), texto.slice(40, 80)] : [texto];
-    const w = Math.min(maxW, Math.max(...lineas.map((l) => l.length)) * 7 + 16);
-    const h = lineas.length * 16 + 12;
-    const bx = agente.x - w / 2, by = agente.y - 70 - h;
+    ctx.font = "bold 12px monospace";
+    const maxChars = 34;
+    const lineas = envolverTexto(texto, maxChars);
+    const charW = 7.2;
+    const maxLen = Math.max(...lineas.map((l) => l.length));
+    const w = Math.min(240, Math.max(40, maxLen * charW + 20));
+    const lineH = 16;
+    const h = lineas.length * lineH + 14;
+    let bx = agente.x - w / 2;
+    bx = Math.max(4, Math.min(bx, W - w - 4));
+    let by = agente.y - 78 - h;
+    if (by < 4) by = agente.y + 36;
+    // sombra + fondo blanco + borde para legibilidad
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.fillRect(bx - 3, by - 3, w + 6, h + 6);
     ctx.fillStyle = "#fff";
     ctx.fillRect(bx, by, w, h);
+    ctx.strokeStyle = "#2e3060";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(bx, by, w, h);
     ctx.fillStyle = "#111";
     ctx.textAlign = "left";
-    lineas.forEach((l, i) => ctx.fillText(l, bx + 8, by + 18 + i * 16));
-    // pico
+    lineas.forEach((l, i) => ctx.fillText(l, bx + 10, by + 18 + i * lineH));
+    // pico hacia el agente
     ctx.fillStyle = "#fff";
     ctx.beginPath();
-    ctx.moveTo(agente.x - 6, by + h); ctx.lineTo(agente.x + 6, by + h); ctx.lineTo(agente.x, by + h + 10);
+    const py = by + h;
+    ctx.moveTo(agente.x - 7, py); ctx.lineTo(agente.x + 7, py); ctx.lineTo(agente.x, py + 12);
     ctx.fill();
     ctx.restore();
   }

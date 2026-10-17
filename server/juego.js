@@ -19,6 +19,7 @@ function crearJuego({ agentesAI, juezAI, avisar, onEvento, config }) {
   let cuentaInterval = null;
   let rondaEnCurso = false;
   let detener = false;
+  let listoAvisado = false;
 
   const duracion = (config && config.duracion) || 120;
   const cuenta = (config && config.cuenta) || 30;
@@ -71,8 +72,9 @@ function crearJuego({ agentesAI, juezAI, avisar, onEvento, config }) {
     agentes.push(agente);
     emitir("agente:nuevo", agente);
     emitir("estado", estadoPublico());
-    if (avisar) {
-      avisar("registro", { nombre: agente.nombre, avatar: agente.avatar, total: agentes.length, vivos: agentes.filter((a) => a.conectado).length });
+    if (avisar && agentes.length >= 2 && !listoAvisado) {
+      listoAvisado = true;
+      avisar("listo", { total: agentes.length });
     }
     return { ok: true, agente };
   }
@@ -162,7 +164,8 @@ function crearJuego({ agentesAI, juezAI, avisar, onEvento, config }) {
         if (!r) { continue; }
         juego.respuestas[a.id] = r;
         totalRespondidos += 1;
-        emitir("ronda:respuesta", { agenteId: a.id, letra: r.respuesta, comentario: r.comentario });
+        const textoOpcion = pregunta.opciones && pregunta.opciones[r.respuesta] ? pregunta.opciones[r.respuesta] : "";
+        emitir("ronda:respuesta", { agenteId: a.id, letra: r.respuesta, comentario: r.comentario, respuesta: textoOpcion });
         if (r.respuesta === pregunta.correcta) {
           a.puntos += 1;
           correctos += 1;
@@ -226,6 +229,7 @@ function crearJuego({ agentesAI, juezAI, avisar, onEvento, config }) {
     juego.historial = [];
     juego.ganador = null;
     turno = 0;
+    listoAvisado = false;
     agentes.forEach((a) => { a.puntos = 0; });
     emitir("estado", estadoPublico());
     return { ok: true };

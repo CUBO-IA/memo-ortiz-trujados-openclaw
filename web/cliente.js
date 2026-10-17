@@ -38,7 +38,8 @@
   socket.on("ronda:categoria", (d) => { estado.categoria = d.categoria; estado.globos = {}; publicar(); });
   socket.on("ronda:pregunta", (d) => { estado.pregunta = d; publicar(); });
   socket.on("ronda:respuesta", (d) => {
-    estado.globos[d.agenteId] = d.comentario ? d.letra + ". " + d.comentario : d.letra;
+    const sel = d.respuesta ? d.letra + ") " + d.respuesta : d.letra;
+    estado.globos[d.agenteId] = d.comentario ? sel + " — " + d.comentario : sel;
     publicar();
   });
   socket.on("ronda:resultado", (d) => { estado.ultimoResultado = d; publicar(); });

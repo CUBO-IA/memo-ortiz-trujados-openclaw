@@ -4,6 +4,9 @@ const HOOK_TOKEN = process.env.OPENCLAW_HOOK_TOKEN || "";
 const TELEGRAM_ID = process.env.TELEGRAM_ID_MEMO || "";
 
 function textoAviso(tipo, datos) {
+  if (tipo === "listo") {
+    return "Ya hay " + datos.total + " agentes conectados y listos para jugar Trujados. Avisale a Memo y preguntale si quiere iniciar la partida.";
+  }
   if (tipo === "registro") {
     return "Se registró " + datos.nombre + " (avatar " + datos.avatar + "). Total: " + datos.total + " registrados, " + datos.vivos + " en vivo.";
   }
